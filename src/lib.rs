@@ -13,12 +13,16 @@ quick_error! {
         TryFromInt(err: std::num::TryFromIntError) {
             from()
         }
+
+        DecodePartial(err: String) {
+            from(err: data_encoding::DecodePartial) -> (format!("{:?}", err))
+        }
     }
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Geotime(i128);
 
 impl From<i32> for Geotime {
