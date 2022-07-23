@@ -1,3 +1,5 @@
+#![crate_type = "lib"]
+
 #[macro_use]
 extern crate quick_error;
 
@@ -32,7 +34,7 @@ impl From<i64> for Geotime {
 }
 
 impl From<i128> for Geotime {
-    fn from(n: i128) -> Self {
+    fn from(n: i128) ->Geotime {
         Self(n)
     }
 }
