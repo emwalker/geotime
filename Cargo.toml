@@ -1,0 +1,9 @@
+[package]
+name = "geotime"
+version = "0.0.1"
+authors = ["Eric Walker <eric.walker@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+chrono = "0"
+quick-error = "2"
