@@ -2,7 +2,7 @@
 
 Geotime provides a 128-bit signed integer timestamp compatible with Unix `time_t` and anchored at the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time).
 
-A 128-bit timestamp allows one to represent times of events in geological, historical and present-day time to millisecond precision.  We go down to milliseconds as a convenience for handling timestamps for recent events.  In order to maintain a clean mapping to Unix timestamps, we inherit whatever is going on with leap seconds.  Timestamps can represent any date within +- 5e27 years of 1970.
+A 128-bit timestamp allows us to represent times of events in geological, historical and present-day time to millisecond precision.  We go down to milliseconds as a convenience for handling timestamps for recent events.  In order to maintain a clean mapping to Unix timestamps, we inherit whatever is going on with leap seconds.  Timestamps can represent any date within +- 5e27 years of 1970.
 
 ## Display strings
 
@@ -38,7 +38,7 @@ assert_eq!(
 
 ## Serialization formats
 
-Several structs are provided for serializing timestamps to strings, shown in the tables below.  Offsets are milliseconds from January 1, 1970. In each format, lexical ordering of the encoded timestamps is perserved.
+Several structs are provided for serializing timestamps to strings.  Various formats are shown in the tables below.  Offsets are milliseconds from January 1, 1970. In each format, lexical ordering of the encoded timestamps is perserved.
 
 ### LexicalHex
 

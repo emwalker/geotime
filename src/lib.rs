@@ -133,6 +133,13 @@ mod tests {
         }
 
         #[test]
+        fn min_and_max_years() {
+            let n = i128::MAX as f64;
+            assert_eq!(n / (MILLISECONDS_IN_YEAR_APPROX) as f64, 5.53153556298342e27);
+            assert_eq!(-n / (MILLISECONDS_IN_YEAR_APPROX) as f64, -5.53153556298342e27);
+        }
+
+        #[test]
         fn display_string() {
             let ts = Geotime::from(0);
             assert_eq!(ts.display_string("%Y"), "1970");
