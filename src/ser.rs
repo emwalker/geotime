@@ -22,6 +22,12 @@ impl From<Geotime> for LexicalHex {
     }
 }
 
+impl From<LexicalHex> for Geotime {
+    fn from(ts: LexicalHex) -> Self {
+        Self(ts.0)
+    }
+}
+
 impl ser::Serialize for LexicalHex {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -69,6 +75,12 @@ pub struct LexicalBase32HexNopad(i128);
 
 impl From<Geotime> for LexicalBase32HexNopad {
     fn from(ts: Geotime) -> Self {
+        Self(ts.0)
+    }
+}
+
+impl From<LexicalBase32HexNopad> for Geotime {
+    fn from(ts: LexicalBase32HexNopad) -> Self {
         Self(ts.0)
     }
 }
@@ -130,11 +142,17 @@ const GEOHASH: Encoding = new_encoding! {
     symbols: "0123456789bcdefghjkmnpqrstuvwxyz",
 };
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct LexicalGeohash(i128);
 
 impl From<Geotime> for LexicalGeohash {
     fn from(ts: Geotime) -> Self {
+        Self(ts.0)
+    }
+}
+
+impl From<LexicalGeohash> for Geotime {
+    fn from(ts: LexicalGeohash) -> Self {
         Self(ts.0)
     }
 }
@@ -164,9 +182,7 @@ impl<'de> serde::de::Visitor<'de> for LexicalGeohashVisitor {
         E: de::Error,
     {
         let input = v.as_bytes();
-        let size = GEOHASH
-            .decode_len(input.len())
-            .map_err(de::Error::custom)?;
+        let size = GEOHASH.decode_len(input.len()).map_err(de::Error::custom)?;
         let mut output = vec![0; size];
 
         GEOHASH
@@ -201,6 +217,12 @@ pub struct Lexical64(i128);
 
 impl From<Geotime> for Lexical64 {
     fn from(ts: Geotime) -> Self {
+        Self(ts.0)
+    }
+}
+
+impl From<Lexical64> for Geotime {
+    fn from(ts: Lexical64) -> Self {
         Self(ts.0)
     }
 }
