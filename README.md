@@ -6,7 +6,7 @@ A 128-bit timestamp allows one to represent times of events in geological, histo
 
 ## Serialization formats
 
-Offset are milliseconds from January 1, 1970. In each serialization, lexical ordering of the encoded timestamps is perserved.
+Offsets are milliseconds since January 1, 1970. In each serialization, lexical ordering of the encoded timestamps is perserved.
 
 ### LexicalHex
 
