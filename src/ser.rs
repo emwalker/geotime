@@ -131,15 +131,15 @@ const GEOHASH: Encoding = new_encoding! {
 };
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Geohash(i128);
+pub struct LexicalGeohash(i128);
 
-impl From<Geotime> for Geohash {
+impl From<Geotime> for LexicalGeohash {
     fn from(ts: Geotime) -> Self {
         Self(ts.0)
     }
 }
 
-impl ser::Serialize for Geohash {
+impl ser::Serialize for LexicalGeohash {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: ser::Serializer,
@@ -150,10 +150,10 @@ impl ser::Serialize for Geohash {
     }
 }
 
-struct GeohashVisitor;
+struct LexicalGeohashVisitor;
 
-impl<'de> serde::de::Visitor<'de> for GeohashVisitor {
-    type Value = Geohash;
+impl<'de> serde::de::Visitor<'de> for LexicalGeohashVisitor {
+    type Value = LexicalGeohash;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("a LexicalBase32Hex-encoded i128 value")
@@ -178,16 +178,16 @@ impl<'de> serde::de::Visitor<'de> for GeohashVisitor {
         b.copy_from_slice(&output[0..16]);
         let n = i128::from_be_bytes(b);
         let v = delexify(n);
-        Ok(Geohash(v))
+        Ok(LexicalGeohash(v))
     }
 }
 
-impl<'de> de::Deserialize<'de> for Geohash {
-    fn deserialize<D>(deserializer: D) -> Result<Geohash, D::Error>
+impl<'de> de::Deserialize<'de> for LexicalGeohash {
+    fn deserialize<D>(deserializer: D) -> Result<LexicalGeohash, D::Error>
     where
         D: de::Deserializer<'de>,
     {
-        deserializer.deserialize_string(GeohashVisitor)
+        deserializer.deserialize_string(LexicalGeohashVisitor)
     }
 }
 
@@ -321,12 +321,12 @@ mod tests {
         }
     }
 
-    mod geohash {
+    mod lexical_geohash {
         use super::*;
 
         fn assert_serialize(values: &[Value]) {
             for (n, ser) in values {
-                let ts = Geohash(*n);
+                let ts = LexicalGeohash(*n);
                 assert_tokens(&ts, &[Token::Str(ser)]);
             }
             assert_order_preserved(values);

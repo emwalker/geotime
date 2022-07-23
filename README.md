@@ -32,7 +32,7 @@ Offsets are milliseconds since January 1, 1970. In each serialization, lexical o
 | 100 | `G00000000000000000000000CG` |
 | 10e21 | `G00000000003CDE9LN2TT80000` |
 
-### Geohash
+### LexicalGeohash
 
 | Offset | Serialization |
 | ------ | ------------- |
