@@ -3,6 +3,8 @@ extern crate quick_error;
 
 use chrono::{DateTime, Utc};
 
+mod ser;
+
 quick_error! {
     #[derive(Clone, Debug)]
     pub enum Error {
@@ -17,9 +19,21 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, Eq, PartialEq)]
 pub struct Geotime(i128);
 
+impl From<i32> for Geotime {
+    fn from(n: i32) -> Self {
+        Self(n.into())
+    }
+}
+
 impl From<i64> for Geotime {
     fn from(n: i64) -> Self {
         Self(n.into())
+    }
+}
+
+impl From<i128> for Geotime {
+    fn from(n: i128) -> Self {
+        Self(n)
     }
 }
 

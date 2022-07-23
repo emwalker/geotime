@@ -6,4 +6,7 @@ edition = "2021"
 
 [dependencies]
 chrono = "0"
+hex = "0"
 quick-error = "2"
+serde = { version = "1" }
+serde_test = "1"
