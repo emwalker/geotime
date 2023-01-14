@@ -1,8 +1,10 @@
 [package]
 name = "geotime"
-version = "0.0.2"
 authors = ["Eric Walker <eric.walker@gmail.com>"]
+description = "Provides signed 128-bit timestamps that are compatible with Unix time_t and anchored at the Unix epoch."
 edition = "2021"
+license = "MIT"
+version = "0.0.2"
 
 [dependencies]
 base64 = "0"
