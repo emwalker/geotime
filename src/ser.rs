@@ -13,6 +13,27 @@ fn delexify(n: i128) -> i128 {
     n ^ (1 << 127)
 }
 
+/// Hex format that can be lexically sorted.
+///
+/// ```
+/// use geotime::{Geotime, LexicalHex};
+///
+/// let dt: LexicalHex = Geotime::from(0).into();
+/// assert_eq!(dt.to_string(), "80000000000000000000000000000000");
+/// ```
+///
+/// For offsets in milliseconds from 1970:
+///
+/// | Offset | Serialization            |
+/// |--------|--------------------------|
+/// | -10e21 | `Uzzzzzzzzwb=C_8u8L0000` |
+/// | -100   | `Uzzzzzzzzzzzzzzzzzzzb0` |
+/// | -1     | `Uzzzzzzzzzzzzzzzzzzzzk` |
+/// | 0      | `V000000000000000000000` |
+/// | 1      | `V00000000000000000000F` |
+/// | 100    | `V0000000000000000000O0` |
+/// | 10e21  | `V000000003NpmPr5re0000` |
+///
 #[derive(Debug, Eq, PartialEq)]
 pub struct LexicalHex(i128);
 
@@ -36,6 +57,13 @@ impl ser::Serialize for LexicalHex {
         let v = lexify(self.0);
         let s = hex::encode(v.to_be_bytes());
         serializer.serialize_str(&s)
+    }
+}
+
+impl std::fmt::Display for LexicalHex {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use serde::Serialize;
+        self.serialize(f)
     }
 }
 
@@ -70,6 +98,27 @@ impl<'de> de::Deserialize<'de> for LexicalHex {
     }
 }
 
+/// Base32 hex format that can be lexically sorted.
+///
+/// ```
+/// use geotime::{Geotime, LexicalBase32HexNopad};
+///
+/// let dt: LexicalBase32HexNopad = Geotime::from(0).into();
+/// assert_eq!(dt.to_string(), "G0000000000000000000000000");
+/// ```
+///
+/// For offsets in milliseconds from 1970:
+///
+/// | Offset | Serialization                |
+/// |--------|------------------------------|
+/// | -10e21 | `FVVVVVVVVVVSJIHMA8T22O0000` |
+/// | -100   | `FVVVVVVVVVVVVVVVVVVVVVVVJG` |
+/// | -1     | `FVVVVVVVVVVVVVVVVVVVVVVVVS` |
+/// | 0      | `G0000000000000000000000000` |
+/// | 1      | `G0000000000000000000000004` |
+/// | 100    | `G00000000000000000000000CG` |
+/// | 10e21  | `G00000000003CDE9LN2TT80000` |
+///
 #[derive(Debug, Eq, PartialEq)]
 pub struct LexicalBase32HexNopad(i128);
 
@@ -93,6 +142,13 @@ impl ser::Serialize for LexicalBase32HexNopad {
         let v = lexify(self.0);
         let s = BASE32HEX_NOPAD.encode(&v.to_be_bytes());
         serializer.serialize_str(&s)
+    }
+}
+
+impl std::fmt::Display for LexicalBase32HexNopad {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use serde::Serialize;
+        self.serialize(f)
     }
 }
 
@@ -142,6 +198,27 @@ const GEOHASH: Encoding = new_encoding! {
     symbols: "0123456789bcdefghjkmnpqrstuvwxyz",
 };
 
+/// Geohash-like format that can be lexically sorted.
+///
+/// ```
+/// use geotime::{Geotime, LexicalGeohash};
+///
+/// let dt: LexicalGeohash = Geotime::from(0).into();
+/// assert_eq!(dt.to_string(), "h0000000000000000000000000");
+/// ```
+///
+/// For offsets in milliseconds from 1970:
+///
+/// | Offset | Serialization                |
+/// |--------|------------------------------|
+/// | -10e21 | `gzzzzzzzzzzwmkjqb8x22s0000` |
+/// | -100   | `gzzzzzzzzzzzzzzzzzzzzzzzmh` |
+/// | -1     | `gzzzzzzzzzzzzzzzzzzzzzzzzw` |
+/// | 0      | `h0000000000000000000000000` |
+/// | 1      | `h0000000000000000000000004` |
+/// | 100    | `h00000000000000000000000dh` |
+/// | 10e21  | `h00000000003def9pr2xx80000` |
+///
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct LexicalGeohash(i128);
 
@@ -165,6 +242,13 @@ impl ser::Serialize for LexicalGeohash {
         let v = lexify(self.0);
         let s = GEOHASH.encode(&v.to_be_bytes());
         serializer.serialize_str(&s)
+    }
+}
+
+impl std::fmt::Display for LexicalGeohash {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use serde::Serialize;
+        self.serialize(f)
     }
 }
 
@@ -212,6 +296,27 @@ const LEXICAL64: Encoding = new_encoding! {
     symbols: "0123456789=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
 };
 
+/// Base64-like format that can be lexically sorted.
+///
+/// ```
+/// use geotime::{Geotime, Lexical64};
+///
+/// let dt: Lexical64 = Geotime::from(0).into();
+/// assert_eq!(dt.to_string(), "V000000000000000000000");
+/// ```
+///
+/// For offsets in milliseconds from 1970:
+///
+/// | Offset | Serialization            |
+/// |--------|--------------------------|
+/// | -10e21 | `Uzzzzzzzzwb=C_8u8L0000` |
+/// | -100   | `Uzzzzzzzzzzzzzzzzzzzb0` |
+/// | -1     | `Uzzzzzzzzzzzzzzzzzzzzk` |
+/// | 0      | `V000000000000000000000` |
+/// | 1      | `V00000000000000000000F` |
+/// | 100    | `V0000000000000000000O0` |
+/// | 10e21  | `V000000003NpmPr5re0000` |
+///
 #[derive(Debug, Eq, PartialEq)]
 pub struct Lexical64(i128);
 
@@ -235,6 +340,13 @@ impl ser::Serialize for Lexical64 {
         let v = lexify(self.0);
         let s = LEXICAL64.encode(&v.to_be_bytes());
         serializer.serialize_str(&s)
+    }
+}
+
+impl std::fmt::Display for Lexical64 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use serde::Serialize;
+        self.serialize(f)
     }
 }
 

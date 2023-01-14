@@ -1,8 +1,7 @@
 //! # Geotime
 //!
-//! Use 128-bit signed integer timestamps compatible with Unix `time_t` and anchored at the Unix
-//! epoch. Useful for representing the time and date of events in astrophysical, geological,
-//! historical and present-day time and ordering any event in relation to other events.
+//! Geotime provides a 128-bit signed integer timestamp compatible with Unix `time_t` and anchored
+//! at the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time).
 //!
 //! ```
 //! use geotime::Geotime;
@@ -20,8 +19,16 @@
 //! assert_eq!(dt.display_string("%Y"), "29.99 B years ago");
 //! ```
 //!
-//! Uses millisecond precision and does whatever `time_t` does in connection with leap seconds.
-//! Provides several serialization formats that allow for lexical ordering.
+//! A 128-bit timestamp allows us to represent times of events in astrophysical, geological,
+//! historical and present-day timescales to millisecond precision.  We go down to milliseconds as a
+//! convenience for handling timestamps for recent events.  In order to maintain a clean mapping to
+//! Unix timestamps, Geotime inherits whatever is going on with leap seconds.  Timestamps can
+//! represent any date within +- 5e27 years of 1970.
+//!
+//! Several serialization formats are provided that preserve lexical ordering of timestamps.
+//!
+//! This project is rough at this point, and it is probably easy to trigger a panic.  The
+//! plan is to gradually replace panics with errors, but it might be a while.
 #![crate_type = "lib"]
 
 #[macro_use]
@@ -55,6 +62,7 @@ quick_error! {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// 128-bit timestamp compatible with Unix `time_t` and anchored at 1970, the Unix epoch.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Geotime(i128);
 
@@ -87,6 +95,32 @@ impl Geotime {
         Self::from(&Utc::now())
     }
 
+    /// A simple date formatting method is provided to render the timestamps in a human-friendly
+    /// string.  If a timestamp is too large for `chrono` to render using the template provided,
+    /// we fall back to the [human_format crate](https://docs.rs/human_format/latest/human_format/).
+    /// If the timestamp is unsafe for `human_format` to render, we fall back to the debug format.
+    ///
+    /// ```
+    /// use geotime::Geotime;
+    ///
+    /// let dt = Geotime::from(0);
+    /// assert_eq!(dt.display_string("%Y"), "1970");
+    ///
+    /// let dt = Geotime::from((i32::MAX as i128) * 1000);
+    /// assert_eq!(dt.display_string("%Y-%m-%d"), "2038-01-19");
+    ///
+    /// let dt = Geotime::from((i64::MAX as i128) + 1);
+    /// assert_eq!(dt.display_string("%Y"), "299.87 M years from now");
+    ///
+    /// let dt = Geotime::from(-(i64::MAX as i128) * 100);
+    /// assert_eq!(dt.display_string("%Y"), "29.99 B years ago");
+    ///
+    /// let dt = Geotime::from(-i128::MAX - 1);
+    /// assert_eq!(
+    ///     dt.display_string("%Y"),
+    ///     "Geotime(-170141183460469231731687303715884105728) ms ago"
+    /// );
+    /// ```
     pub fn display_string(&self, format: &str) -> String {
         match DateTime::try_from(*self) {
             Ok(dt) => dt.format(format).to_string(),
