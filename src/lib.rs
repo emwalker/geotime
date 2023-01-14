@@ -1,3 +1,25 @@
+//! # Geotime
+//!
+//! Use 128-bit signed integer timestamps compatible with Unix `time_t` and anchored at the Unix
+//! epoch. Useful for representing the time and date of events in astrophysical, geological,
+//! historical and present-day time and ordering any event in relation to other events.
+//!
+//! ```
+//! let ts = Geotime::from(0);
+//! assert_eq!(ts.display_string("%Y-%m-%d"), "1970-01-01");
+//!
+//! let ts = Geotime::from((i32::MAX as i128) * 1000);
+//! assert_eq!(ts.display_string("%Y-%m-%d"), "2038-01-19");
+//!
+//! let ts = Geotime::from((i64::MAX as i128) + 1);
+//! assert_eq!(ts.display_string("%Y"), "299.87 M years from now");
+//!
+//! let ts = Geotime::from(-(i64::MAX as i128) * 100);
+//! assert_eq!(ts.display_string("%Y"), "29.99 B years ago");
+//! ```
+//!
+//! Uses millisecond precision and does whatever `time_t` does in connection with leap seconds.
+//! Provides several serialization formats that allow for lexical ordering.
 #![crate_type = "lib"]
 
 #[macro_use]
