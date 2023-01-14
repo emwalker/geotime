@@ -5,17 +5,19 @@
 //! historical and present-day time and ordering any event in relation to other events.
 //!
 //! ```
-//! let ts = Geotime::from(0);
-//! assert_eq!(ts.display_string("%Y-%m-%d"), "1970-01-01");
+//! use geotime::Geotime;
 //!
-//! let ts = Geotime::from((i32::MAX as i128) * 1000);
-//! assert_eq!(ts.display_string("%Y-%m-%d"), "2038-01-19");
+//! let dt = Geotime::from(0);
+//! assert_eq!(dt.display_string("%Y-%m-%d"), "1970-01-01");
 //!
-//! let ts = Geotime::from((i64::MAX as i128) + 1);
-//! assert_eq!(ts.display_string("%Y"), "299.87 M years from now");
+//! let dt = Geotime::from((i32::MAX as i128) * 1000);
+//! assert_eq!(dt.display_string("%Y-%m-%d"), "2038-01-19");
 //!
-//! let ts = Geotime::from(-(i64::MAX as i128) * 100);
-//! assert_eq!(ts.display_string("%Y"), "29.99 B years ago");
+//! let dt = Geotime::from((i64::MAX as i128) + 1);
+//! assert_eq!(dt.display_string("%Y"), "299.87 M years from now");
+//!
+//! let dt = Geotime::from(-(i64::MAX as i128) * 100);
+//! assert_eq!(dt.display_string("%Y"), "29.99 B years ago");
 //! ```
 //!
 //! Uses millisecond precision and does whatever `time_t` does in connection with leap seconds.
@@ -119,9 +121,8 @@ impl TryFrom<Geotime> for DateTime<Utc> {
     fn try_from(value: Geotime) -> std::result::Result<Self, Self::Error> {
         let n = i64::try_from(value.0)?;
         let (secs, nsecs) = (n / 1000, ((n % 1000) * 1000) as u32);
-        let naive = NaiveDateTime::from_timestamp_opt(secs, nsecs).ok_or_else(|| Error::Chrono(
-            "unable to convert to chrono::DateTime".to_string(),
-        ))?;
+        let naive = NaiveDateTime::from_timestamp_opt(secs, nsecs)
+            .ok_or_else(|| Error::Chrono("unable to convert to chrono::DateTime".to_string()))?;
         let dt: DateTime<Utc> = DateTime::from_utc(naive, Utc);
         Ok(dt)
     }
@@ -137,7 +138,7 @@ mod tests {
 
         #[test]
         fn from_chrono() {
-            let dt = Utc.ymd(1800, 1, 1).and_hms_milli(0, 0, 0, 0);
+            let dt = Utc.with_ymd_and_hms(1800, 1, 1, 0, 0, 0).unwrap();
             let ts = Geotime::from(&dt);
             assert_eq!(dt.timestamp_millis(), ts.timestamp_millis().unwrap());
         }
@@ -145,7 +146,7 @@ mod tests {
         #[test]
         fn to_chrono() {
             let ts = Geotime::from(0);
-            let dt = Utc.ymd(1970, 1, 1).and_hms_milli(0, 0, 0, 0);
+            let dt = Utc.with_ymd_and_hms(1970, 1, 1, 0, 0, 0).unwrap();
             assert_eq!(DateTime::try_from(ts).unwrap(), dt);
         }
 
@@ -157,8 +158,14 @@ mod tests {
         #[test]
         fn min_and_max_years() {
             let n = i128::MAX as f64;
-            assert_eq!(n / (MILLISECONDS_IN_YEAR_APPROX) as f64, 5.53153556298342e27);
-            assert_eq!(-n / (MILLISECONDS_IN_YEAR_APPROX) as f64, -5.53153556298342e27);
+            assert_eq!(
+                n / (MILLISECONDS_IN_YEAR_APPROX) as f64,
+                5.53153556298342e27
+            );
+            assert_eq!(
+                -n / (MILLISECONDS_IN_YEAR_APPROX) as f64,
+                -5.53153556298342e27
+            );
         }
 
         #[test]
