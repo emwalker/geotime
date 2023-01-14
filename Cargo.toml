@@ -5,6 +5,8 @@ description = "Provides signed 128-bit timestamps that are compatible with Unix 
 edition = "2021"
 license = "MIT"
 version = "0.0.3"
+documentation = "https://docs.rs/geotime/latest/geotime/"
+repository = "https://github.com/emwalker/geotime"
 
 [dependencies]
 base64 = "0"
@@ -14,5 +16,5 @@ data-encoding-macro = "0"
 hex = "0"
 human_format = "1"
 quick-error = "2"
-serde = { version = "1" }
+serde = "1"
 serde_test = "1"
