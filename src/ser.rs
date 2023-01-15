@@ -24,15 +24,15 @@ fn delexify(n: i128) -> i128 {
 ///
 /// For offsets in milliseconds from 1970:
 ///
-/// | Offset | Serialization            |
-/// |--------|--------------------------|
-/// | -10e21 | `Uzzzzzzzzwb=C_8u8L0000` |
-/// | -100   | `Uzzzzzzzzzzzzzzzzzzzb0` |
-/// | -1     | `Uzzzzzzzzzzzzzzzzzzzzk` |
-/// | 0      | `V000000000000000000000` |
-/// | 1      | `V00000000000000000000F` |
-/// | 100    | `V0000000000000000000O0` |
-/// | 10e21  | `V000000003NpmPr5re0000` |
+/// | Offset | Serialization                      |
+/// |--------|------------------------------------|
+/// | -10e21 | `7fffffffffffffc9ca36523a21600000` |
+/// | -100   | `7fffffffffffffffffffffffffffff9c` |
+/// | -1     | `7fffffffffffffffffffffffffffffff` |
+/// | 0      | `80000000000000000000000000000000` |
+/// | 1      | `80000000000000000000000000000001` |
+/// | 100    | `80000000000000000000000000000064` |
+/// | 10e21  | `800000000000003635c9adc5dea00000` |
 ///
 #[derive(Debug, Eq, PartialEq)]
 pub struct LexicalHex(i128);
