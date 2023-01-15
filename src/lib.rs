@@ -43,7 +43,7 @@ const MILLISECONDS_IN_YEAR_APPROX: i128 = SECONDS_IN_DAY * 356 * 1000;
 const MAX_YEARS: f64 = 1000000000000.0;
 
 mod ser;
-pub use ser::{Lexical64, LexicalBase32HexNopad, LexicalGeohash, LexicalHex};
+pub use ser::{Lexical16, Lexical32, Lexical64, LexicalGeohash};
 
 quick_error! {
     #[derive(Clone, Debug)]

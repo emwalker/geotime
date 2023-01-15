@@ -13,12 +13,12 @@ fn delexify(n: i128) -> i128 {
     n ^ (1 << 127)
 }
 
-/// Hex format that can be lexically sorted.
+/// Hex encoding that can be lexically sorted.
 ///
 /// ```
-/// use geotime::{Geotime, LexicalHex};
+/// use geotime::{Geotime, Lexical16};
 ///
-/// let dt: LexicalHex = Geotime::from(0).into();
+/// let dt: Lexical16 = Geotime::from(0).into();
 /// assert_eq!(dt.to_string(), "80000000000000000000000000000000");
 /// ```
 ///
@@ -35,21 +35,21 @@ fn delexify(n: i128) -> i128 {
 /// | 10e21  | `800000000000003635c9adc5dea00000` |
 ///
 #[derive(Debug, Eq, PartialEq)]
-pub struct LexicalHex(i128);
+pub struct Lexical16(i128);
 
-impl From<Geotime> for LexicalHex {
+impl From<Geotime> for Lexical16 {
     fn from(ts: Geotime) -> Self {
         Self(ts.0)
     }
 }
 
-impl From<LexicalHex> for Geotime {
-    fn from(ts: LexicalHex) -> Self {
+impl From<Lexical16> for Geotime {
+    fn from(ts: Lexical16) -> Self {
         Self(ts.0)
     }
 }
 
-impl ser::Serialize for LexicalHex {
+impl ser::Serialize for Lexical16 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: ser::Serializer,
@@ -60,20 +60,20 @@ impl ser::Serialize for LexicalHex {
     }
 }
 
-impl std::fmt::Display for LexicalHex {
+impl std::fmt::Display for Lexical16 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use serde::Serialize;
         self.serialize(f)
     }
 }
 
-struct LexicalHexVisitor;
+struct Lexical16Visitor;
 
-impl<'de> serde::de::Visitor<'de> for LexicalHexVisitor {
-    type Value = LexicalHex;
+impl<'de> serde::de::Visitor<'de> for Lexical16Visitor {
+    type Value = Lexical16;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a LexicalHex-encoded i128 value")
+        formatter.write_str("a Lexical16-encoded i128 value")
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -85,25 +85,25 @@ impl<'de> serde::de::Visitor<'de> for LexicalHexVisitor {
         b.copy_from_slice(&bytes[0..16]);
         let n = i128::from_be_bytes(b);
         let v = delexify(n);
-        Ok(LexicalHex(v))
+        Ok(Lexical16(v))
     }
 }
 
-impl<'de> de::Deserialize<'de> for LexicalHex {
-    fn deserialize<D>(deserializer: D) -> Result<LexicalHex, D::Error>
+impl<'de> de::Deserialize<'de> for Lexical16 {
+    fn deserialize<D>(deserializer: D) -> Result<Lexical16, D::Error>
     where
         D: de::Deserializer<'de>,
     {
-        deserializer.deserialize_string(LexicalHexVisitor)
+        deserializer.deserialize_string(Lexical16Visitor)
     }
 }
 
-/// Base32 hex format that can be lexically sorted.
+/// Base 32 encoding that can be lexically sorted.
 ///
 /// ```
-/// use geotime::{Geotime, LexicalBase32HexNopad};
+/// use geotime::{Geotime, Lexical32};
 ///
-/// let dt: LexicalBase32HexNopad = Geotime::from(0).into();
+/// let dt: Lexical32 = Geotime::from(0).into();
 /// assert_eq!(dt.to_string(), "G0000000000000000000000000");
 /// ```
 ///
@@ -120,21 +120,21 @@ impl<'de> de::Deserialize<'de> for LexicalHex {
 /// | 10e21  | `G00000000003CDE9LN2TT80000` |
 ///
 #[derive(Debug, Eq, PartialEq)]
-pub struct LexicalBase32HexNopad(i128);
+pub struct Lexical32(i128);
 
-impl From<Geotime> for LexicalBase32HexNopad {
+impl From<Geotime> for Lexical32 {
     fn from(ts: Geotime) -> Self {
         Self(ts.0)
     }
 }
 
-impl From<LexicalBase32HexNopad> for Geotime {
-    fn from(ts: LexicalBase32HexNopad) -> Self {
+impl From<Lexical32> for Geotime {
+    fn from(ts: Lexical32) -> Self {
         Self(ts.0)
     }
 }
 
-impl ser::Serialize for LexicalBase32HexNopad {
+impl ser::Serialize for Lexical32 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: ser::Serializer,
@@ -145,20 +145,20 @@ impl ser::Serialize for LexicalBase32HexNopad {
     }
 }
 
-impl std::fmt::Display for LexicalBase32HexNopad {
+impl std::fmt::Display for Lexical32 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use serde::Serialize;
         self.serialize(f)
     }
 }
 
-struct LexicalBase32HexVisitor;
+struct Lexical32Visitor;
 
-impl<'de> serde::de::Visitor<'de> for LexicalBase32HexVisitor {
-    type Value = LexicalBase32HexNopad;
+impl<'de> serde::de::Visitor<'de> for Lexical32Visitor {
+    type Value = Lexical32;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a LexicalBase32Hex-encoded i128 value")
+        formatter.write_str("a Lexical32Hex-encoded i128 value")
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -180,16 +180,16 @@ impl<'de> serde::de::Visitor<'de> for LexicalBase32HexVisitor {
         b.copy_from_slice(&output[0..16]);
         let n = i128::from_be_bytes(b);
         let v = delexify(n);
-        Ok(LexicalBase32HexNopad(v))
+        Ok(Lexical32(v))
     }
 }
 
-impl<'de> de::Deserialize<'de> for LexicalBase32HexNopad {
-    fn deserialize<D>(deserializer: D) -> Result<LexicalBase32HexNopad, D::Error>
+impl<'de> de::Deserialize<'de> for Lexical32 {
+    fn deserialize<D>(deserializer: D) -> Result<Lexical32, D::Error>
     where
         D: de::Deserializer<'de>,
     {
-        deserializer.deserialize_string(LexicalBase32HexVisitor)
+        deserializer.deserialize_string(Lexical32Visitor)
     }
 }
 
@@ -198,7 +198,7 @@ const GEOHASH: Encoding = new_encoding! {
     symbols: "0123456789bcdefghjkmnpqrstuvwxyz",
 };
 
-/// Geohash-like format that can be lexically sorted.
+/// Geohash-like encoding that can be lexically sorted.
 ///
 /// ```
 /// use geotime::{Geotime, LexicalGeohash};
@@ -258,7 +258,7 @@ impl<'de> serde::de::Visitor<'de> for LexicalGeohashVisitor {
     type Value = LexicalGeohash;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a LexicalBase32Hex-encoded i128 value")
+        formatter.write_str("a Lexical32Hex-encoded i128 value")
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -296,7 +296,7 @@ const LEXICAL64: Encoding = new_encoding! {
     symbols: "0123456789=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
 };
 
-/// Base64-like format that can be lexically sorted.
+/// Base 64 encoding that can be lexically sorted.
 ///
 /// ```
 /// use geotime::{Geotime, Lexical64};
@@ -350,13 +350,13 @@ impl std::fmt::Display for Lexical64 {
     }
 }
 
-struct LexicalBase64Visitor;
+struct Lexical64Visitor;
 
-impl<'de> serde::de::Visitor<'de> for LexicalBase64Visitor {
+impl<'de> serde::de::Visitor<'de> for Lexical64Visitor {
     type Value = Lexical64;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a LexicalBase32Hex-encoded i128 value")
+        formatter.write_str("a Lexical32-encoded i128 value")
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -387,7 +387,7 @@ impl<'de> de::Deserialize<'de> for Lexical64 {
     where
         D: de::Deserializer<'de>,
     {
-        deserializer.deserialize_string(LexicalBase64Visitor)
+        deserializer.deserialize_string(Lexical64Visitor)
     }
 }
 
@@ -405,12 +405,12 @@ mod tests {
         assert_eq!(left, &right);
     }
 
-    mod lexical_hex {
+    mod lexical_16 {
         use super::*;
 
         fn assert_serialize(values: &[Value]) {
             for (n, ser) in values {
-                let ts = LexicalHex(*n);
+                let ts = Lexical16(*n);
                 assert_tokens(&ts, &[Token::Str(ser)]);
             }
             assert_order_preserved(values);
@@ -430,12 +430,12 @@ mod tests {
         }
     }
 
-    mod lexical_base32_hex_nopad {
+    mod lexical_32 {
         use super::*;
 
         fn assert_serialize(values: &[Value]) {
             for (n, ser) in values {
-                let ts = LexicalBase32HexNopad(*n);
+                let ts = Lexical32(*n);
                 assert_tokens(&ts, &[Token::Str(ser)]);
             }
             assert_order_preserved(values);
@@ -480,7 +480,7 @@ mod tests {
         }
     }
 
-    mod lexical64 {
+    mod lexical_64 {
         use super::*;
 
         fn assert_serialize(values: &[Value]) {
