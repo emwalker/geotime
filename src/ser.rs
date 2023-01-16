@@ -1,6 +1,6 @@
 use data_encoding::{Encoding, BASE32HEX_NOPAD};
 use data_encoding_macro::new_encoding;
-use serde::{de, ser};
+use serde::{de, ser, Serialize};
 use std::fmt;
 
 use crate::{Error, Geotime};
@@ -62,7 +62,6 @@ impl ser::Serialize for Lexical16 {
 
 impl std::fmt::Display for Lexical16 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use serde::Serialize;
         self.serialize(f)
     }
 }
@@ -147,7 +146,6 @@ impl ser::Serialize for Lexical32 {
 
 impl std::fmt::Display for Lexical32 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use serde::Serialize;
         self.serialize(f)
     }
 }
@@ -247,7 +245,6 @@ impl ser::Serialize for LexicalGeohash {
 
 impl std::fmt::Display for LexicalGeohash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use serde::Serialize;
         self.serialize(f)
     }
 }
@@ -345,7 +342,6 @@ impl ser::Serialize for Lexical64 {
 
 impl std::fmt::Display for Lexical64 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use serde::Serialize;
         self.serialize(f)
     }
 }
